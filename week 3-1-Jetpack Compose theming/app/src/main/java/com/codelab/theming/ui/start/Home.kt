@@ -18,12 +18,7 @@ package com.codelab.theming.ui.start
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
@@ -34,24 +29,18 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.codelab.theming.R
 import com.codelab.theming.data.Post
 import com.codelab.theming.data.PostRepo
-import com.codelab.theming.ui.finish.FeaturedPost
-import com.codelab.theming.ui.finish.PostItem
 import com.codelab.theming.ui.start.theme.JetnewsTheme
 import java.util.Locale
 
@@ -59,7 +48,7 @@ import java.util.Locale
 fun Home() {
     val featured = remember { PostRepo.getFeaturedPost() }
     val posts = remember { PostRepo.getPosts() }
-    MaterialTheme {
+    JetnewsTheme {
         Scaffold(
             topBar = { AppBar() }
         ) { innerPadding ->
@@ -166,13 +155,10 @@ private fun PostMetadata(
     val divider = "  •  "
     val tagDivider = "  "
     val text = buildAnnotatedString {
-        append("This is some unstyled text\n")
-        withStyle(SpanStyle(color = Color.Red)) {
-            append("Red text\n")
-        }
-        withStyle(SpanStyle(fontSize = 24.sp)) {
-            append("Large text")
-        }
+        append(post.metadata.date)
+        append(divider)
+        append(stringResource(R.string.read_time, post.metadata.readTimeMinutes))
+        append(divider)
         val tagStyle = MaterialTheme.typography.overline.toSpanStyle().copy(
             background = MaterialTheme.colors.primary.copy(alpha = 0.1f)
         )
@@ -180,17 +166,15 @@ private fun PostMetadata(
             if (index != 0) {
                 append(tagDivider)
             }
-            append(" ${tag.uppercase(Locale.getDefault())} ")
             withStyle(tagStyle) {
-                append(" ${tag.toUpperCase()} ")
-                }
+                append(" ${tag.uppercase(Locale.getDefault())} ")
+            }
         }
     }
     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
         Text(
             text = text,
-            style = MaterialTheme.typography.subtitle2,
-            fontSize = 22.sp // explicit size overrides the size in the style
+            modifier=modifier
         )
     }
 }
@@ -208,6 +192,7 @@ fun PostItem(
         icon = {
             Image(
                 painter = painterResource(post.imageThumbId),
+                contentDescription = null,
                 modifier = Modifier.clip(shape = MaterialTheme.shapes.small)
             )
         },
@@ -218,7 +203,6 @@ fun PostItem(
             PostMetadata(post)
         }
     )
-
 }
 
 @Preview("Post Item")
@@ -254,14 +238,3 @@ private fun HomePreview() {
     Home()
 }
 
-@Composable
-fun AcmeButton(
-    // expose Button params consumers should be able to change
-) {
-    val acmeButtonShape: Shape = MaterialTheme.shapes.medium
-    Button(
-        shape = acmeButtonShape,
-        // other params
-    )
-}
-}
