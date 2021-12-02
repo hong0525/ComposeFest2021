@@ -20,5 +20,6 @@ class OverviewScreenTest {
         composeTestRule
             .onNodeWithText("Alerts")
             .assertIsDisplayed()
+
     }
 }
